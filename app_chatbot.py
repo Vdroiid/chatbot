@@ -1,7 +1,6 @@
 import wx
 import threading
 from funciones_chatbot import grabar_sintoma, leer_texto, validar_diagnostico, recomendar, sintomas_gripa, sintomas_resfriado, sintomas_alergia, numero_ordinal
-""" Falta ponerle una bienvenida. """
 
 class AutoCloseDialog(wx.Dialog):
     def __init__(self, *args, **kw):
@@ -43,6 +42,7 @@ class DiagnosticoFrame(wx.Frame):
         self.SetSize((300, 300))  # Tamaño fijo
         self.SetMinSize((300, 300))  # Tamaño mínimo
         self.SetMaxSize((300, 300))  # Tamaño máximo para evitar redimensionamiento
+        
         # Eventos
         self.btn_agregar.Bind(wx.EVT_BUTTON, self.on_agregar_sintoma)
         self.btn_diagnosticar.Bind(wx.EVT_BUTTON, self.on_diagnosticar)
@@ -52,7 +52,6 @@ class DiagnosticoFrame(wx.Frame):
         threading.Thread(target=self.welcome).start()
 
     def welcome(self):
-        # Leer el texto de bienvenida y mostrar el cuadro de mensaje en el hilo principal
         texto = "¡Hola! Soy DiagnosAI\n\nTe haré un diagnóstico.Para empezar, por favor ingresa tus síntomas."
         wx.CallAfter(self.mostrar_cuadro_mensaje, texto)
 
@@ -78,6 +77,7 @@ class DiagnosticoFrame(wx.Frame):
                 self.txt_sintoma.Clear()
                 self.contador += 1
                 if len(self.sintomas) <= 7:
+
                     # Actualizar el texto estático
                     self.static_text.SetLabel(f"Ingrese la {numero_ordinal[self.contador]} síntoma:")
             else:
@@ -103,11 +103,9 @@ class DiagnosticoFrame(wx.Frame):
         self.contador = 0
         self.static_text.SetLabel(f"Ingrese la {numero_ordinal[self.contador]} síntoma:")
     def on_grabar(self, event):
-        # Mostrar diálogo
         self.dialog = AutoCloseDialog(self, title="Escuchando...", size=(250, 100))
         self.dialog.Show()
 
-        # Ejecutar la función en un hilo separado
         threading.Thread(target=self.grabar_sintoma).start()
     def grabar_sintoma(self):
         respuesta = grabar_sintoma(self.contador)
@@ -129,7 +127,6 @@ class DiagnosticoFrame(wx.Frame):
             wx.MessageBox("Lo siento, no pude escucharte. Intente de nuevo.", "Advertencia", wx.OK | wx.ICON_WARNING)
         wx.CallAfter(self.dialog.Destroy)
 
-# Función principal
 def main():
     app = wx.App(False)
     frame = DiagnosticoFrame(None, title="DiagnosAI", size=(400, 400))
